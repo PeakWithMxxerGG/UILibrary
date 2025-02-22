@@ -1,1 +1,98 @@
-local s={}local function c()local g=Instance.new("ScreenGui")g.Name="SigmaXNoti"g.Parent=game.CoreGui local h=Instance.new("Frame")h.Name="Core"h.Parent=g h.AnchorPoint=Vector2.new(0,1)h.BackgroundColor3=Color3.fromRGB(255,255,255)h.BackgroundTransparency=1 h.Position=UDim2.new(0,25,1,-25)h.Size=UDim2.new(0,300,1,-25)local i=Instance.new("UIListLayout")i.Parent=h i.HorizontalAlignment=Enum.HorizontalAlignment.Left i.SortOrder=Enum.SortOrder.LayoutOrder i.Padding=UDim.new(0,5)return h end local function n(p,t,x,d)local f=Instance.new("Frame")f.Name="X"f.Parent=p f.BackgroundColor3=Color3.fromRGB(25,25,25)f.BorderSizePixel=0 f.Position=UDim2.new(1,0,0,0)f.Size=UDim2.new(1,0,0,60)local r=Instance.new("UICorner")r.CornerRadius=UDim.new(0,6)r.Parent=f local e=Instance.new("TextLabel")e.Name="H"e.Parent=f e.BackgroundTransparency=1 e.Position=UDim2.new(0,15,0,8)e.Size=UDim2.new(1,-15,0,15)e.Font=Enum.Font.GothamBold e.Text=t e.TextColor3=Color3.fromRGB(255,255,255)e.TextSize=14 e.TextXAlignment=Enum.TextXAlignment.Left local m=Instance.new("TextLabel")m.Name="M"m.Parent=f m.BackgroundTransparency=1 m.Position=UDim2.new(0,15,0,25)m.Size=UDim2.new(1,-15,0,30)m.Font=Enum.Font.GothamMedium m.Text=x m.TextColor3=Color3.fromRGB(200,200,200)m.TextSize=12 m.TextWrapped=true m.TextXAlignment=Enum.TextXAlignment.Left f.Position=UDim2.new(-1,-300,0,0)local w=game:GetService("TweenService"):Create(f,TweenInfo.new(0.5,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Position=UDim2.new(0,0,0,0)})w:Play()task.spawn(function()task.wait(d or 5)local q=game:GetService("TweenService"):Create(f,TweenInfo.new(0.5,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Position=UDim2.new(-1,-300,0,0)})q:Play()task.wait(0.5)f:Destroy()end)end s.Init=c s.Notify=n return s
+local UILib = {}
+
+function UILib:CreateWindow(title)
+    local SigmaGui = Instance.new("ScreenGui")
+    local MainFrame = Instance.new("Frame")
+    local UICorner = Instance.new("UICorner")
+    local Title = Instance.new("TextLabel")
+    local CombatFrame = Instance.new("Frame")
+    local CloseButton = Instance.new("TextButton")
+
+    SigmaGui.Name = "SigmaGui"
+    SigmaGui.Parent = game.CoreGui
+    SigmaGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+    MainFrame.Name = "MainFrame"
+    MainFrame.Parent = SigmaGui
+    MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    MainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+    MainFrame.Size = UDim2.new(0, 300, 0, 250)
+    MainFrame.Active = true
+    MainFrame.Draggable = true
+
+    UICorner.Parent = MainFrame
+    UICorner.CornerRadius = UDim.new(0, 6)
+
+    Title.Name = "Title"
+    Title.Parent = MainFrame
+    Title.BackgroundTransparency = 1
+    Title.Position = UDim2.new(0, 0, 0, 5)
+    Title.Size = UDim2.new(1, 0, 0, 30)
+    Title.Font = Enum.Font.GothamBold
+    Title.Text = title
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.TextSize = 22
+
+    CloseButton.Name = "CloseButton"
+    CloseButton.Parent = MainFrame
+    CloseButton.BackgroundTransparency = 1
+    CloseButton.Position = UDim2.new(1, -30, 0, 5)
+    CloseButton.Size = UDim2.new(0, 25, 0, 25)
+    CloseButton.Font = Enum.Font.GothamBold
+    CloseButton.Text = "X"
+    CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    CloseButton.TextSize = 16
+
+    CombatFrame.Name = "CombatFrame"
+    CombatFrame.Parent = MainFrame
+    CombatFrame.BackgroundTransparency = 1
+    CombatFrame.Position = UDim2.new(0, 10, 0, 45)
+    CombatFrame.Size = UDim2.new(1, -20, 1, -55)
+
+    local window = {}
+    
+    function window:CreateButton(text, callback)
+        local Button = Instance.new("TextButton")
+        local ButtonCorner = Instance.new("UICorner")
+        
+        Button.Name = text.."Button"
+        Button.Parent = CombatFrame
+        Button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        Button.Position = UDim2.new(0, 0, 0, (#CombatFrame:GetChildren() - 1) * 50)
+        Button.Size = UDim2.new(1, 0, 0, 40)
+        Button.Font = Enum.Font.GothamSemibold
+        Button.Text = text
+        Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Button.TextSize = 16
+        Button.AutoButtonColor = false
+        
+        ButtonCorner.CornerRadius = UDim.new(0, 6)
+        ButtonCorner.Parent = Button
+        
+        local TweenService = game:GetService("TweenService")
+        local hover = TweenService:Create(Button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(60, 60, 60)})
+        local unhover = TweenService:Create(Button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(45, 45, 45)})
+        
+        Button.MouseEnter:Connect(function() hover:Play() end)
+        Button.MouseLeave:Connect(function() unhover:Play() end)
+        Button.MouseButton1Click:Connect(callback)
+        
+        return Button
+    end
+
+    CloseButton.MouseEnter:Connect(function()
+        CloseButton.TextColor3 = Color3.fromRGB(255, 50, 50)
+    end)
+
+    CloseButton.MouseLeave:Connect(function()
+        CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end)
+
+    CloseButton.MouseButton1Click:Connect(function()
+        SigmaGui:Destroy()
+    end)
+
+    return window
+end
+
+return UILib
