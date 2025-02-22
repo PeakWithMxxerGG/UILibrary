@@ -1,32 +1,41 @@
-local NotificationLib = {}
+local NotificationLibrary = {}
 
-function NotificationLib:Init()
-    local NotificationHolder = Instance.new("ScreenGui")
-    NotificationHolder.Name = "SigmaNotiHolder"
-    NotificationHolder.Parent = game.CoreGui
-
-    local Notifications = Instance.new("Frame")
-    Notifications.Name = "Notifications"
-    Notifications.Parent = NotificationHolder
-    Notifications.AnchorPoint = Vector2.new(0, 1)
-    Notifications.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Notifications.BackgroundTransparency = 1
-    Notifications.Position = UDim2.new(0, 25, 1, -25)
-    Notifications.Size = UDim2.new(0, 300, 1, -25)
-
-    local ListLayout = Instance.new("UIListLayout")
-    ListLayout.Parent = Notifications
-    ListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-    ListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    ListLayout.Padding = UDim.new(0, 5)
-
-    return Notifications
-end
-
-function NotificationLib:Notify(parent, title, text, duration)
+function NotificationLibrary.Create(title, text, duration)
+    if not NotificationLibrary.Holder then
+        NotificationLibrary.Holder = Instance.new("ScreenGui")
+        NotificationLibrary.Holder.Name = "notiHolder"
+        NotificationLibrary.Holder.Parent = game.CoreGui
+        
+        NotificationLibrary.Frame = Instance.new("Frame")
+        NotificationLibrary.Frame.Name = "Notifications"
+        NotificationLibrary.Frame.Parent = NotificationLibrary.Holder
+        NotificationLibrary.Frame.AnchorPoint = Vector2.new(0, 1)
+        NotificationLibrary.Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        NotificationLibrary.Frame.BackgroundTransparency = 1
+        NotificationLibrary.Frame.Position = UDim2.new(0, 25, 1, -25)
+        NotificationLibrary.Frame.Size = UDim2.new(0, 300, 1, -25)
+        
+        local ListLayout = Instance.new("UIListLayout")
+        ListLayout.Parent = NotificationLibrary.Frame
+        ListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+        ListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        ListLayout.Padding = UDim.new(0, 5)
+    end
+    
+    if tick() - (NotificationLibrary.LastNotification or 0) < 0.5 then return end
+    NotificationLibrary.LastNotification = tick()
+    
+    if #NotificationLibrary.Frame:GetChildren() > 2 then
+        for _, child in ipairs(NotificationLibrary.Frame:GetChildren()) do
+            if child:IsA("Frame") then
+                child:Destroy()
+            end
+        end
+    end
+    
     local Notification = Instance.new("Frame")
     Notification.Name = "Notification"
-    Notification.Parent = parent
+    Notification.Parent = NotificationLibrary.Frame
     Notification.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     Notification.BorderSizePixel = 0
     Notification.Position = UDim2.new(1, 0, 0, 0)
@@ -74,4 +83,4 @@ function NotificationLib:Notify(parent, title, text, duration)
     end)
 end
 
-return NotificationLib
+return NotificationLibrary
